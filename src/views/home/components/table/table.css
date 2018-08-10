@@ -1,0 +1,15 @@
+.table.data-table{
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-bottom: 0;
+    border: 2px solid;
+}
+
+.table.data-table th, .table.data-table td {
+    padding: 0;
+    vertical-align: middle;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}

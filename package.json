@@ -4,12 +4,14 @@
   "private": true,
   "dependencies": {
     "@blueprintjs/core": "^1.23.1",
+    "bootstrap": "^4.1.3",
     "chordsheetjs": "^1.0.4",
     "re-base": "^3.0.2",
     "react": "^15.6.1",
     "react-addons-css-transition-group": "^15.6.0",
     "react-dom": "^15.6.1",
-    "react-router-dom": "^4.1.1"
+    "react-router-dom": "^4.1.1",
+    "reactjs-toastr": "^1.1.0"
   },
   "devDependencies": {
     "enzyme": "^2.8.2",
@@ -21,5 +23,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "homepage": "./"
 }

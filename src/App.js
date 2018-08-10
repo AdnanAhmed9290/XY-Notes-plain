@@ -5,9 +5,13 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './components/Login';
 import Logout from './components/Logout';
-import ChordEditor from './components/ChordEditor';
-import SongList from './components/SongList';
-import { app, base } from './base';
+// import ChordEditor from './components/ChordEditor';
+// import SongList from './components/SongList';
+
+import Home from './views/home/home.view';
+import User from './views/users/User.view';
+
+import { app, firestore } from './base';
 
 function AuthenticatedRoute({component: Component, authenticated, ...rest}) {
   return (
@@ -97,11 +101,12 @@ class App extends Component {
           currentUser: user,
           loading: false,
         })
+        localStorage.setItem('user', user.uid)
 
-        this.songsRef = base.syncState(`songs/${user.uid}`, {
-          context: this,
-          state: 'songs'
-        });
+        // this.songsRef = base.syncState(`songs/${user.uid}`, {
+        //   context: this,
+        //   state: 'songs'
+        // });
       } else {
         this.setState({
           authenticated: false,
@@ -109,14 +114,15 @@ class App extends Component {
           loading: false,
         })
 
-        base.removeBinding(this.songsRef);
+        localStorage.removeItem('user');
+        // base.removeBinding(this.songsRef);
       }
     })
   }
 
   componentWillUnmount() {
     this.removeAuthListener();
-    base.removeBinding(this.songsRef);
+    // base.removeBinding(this.songsRef);
   }
 
   render() {
@@ -133,8 +139,8 @@ class App extends Component {
       <div style={{maxWidth: "1160px", margin: "0 auto"}}>
         <BrowserRouter>
           <div>
-            <Header addSong={this.addSong} authenticated={this.state.authenticated} />
-            <div className="main-content" style={{padding: "1em"}}>
+            <Header isAuthenticated={this.state.authenticated} />
+            <div className="main-content" style={{padding: "1em", minHeight: '80vh'}}>
               <div className="workspace">
                 <Route exact path="/login" render={(props) => {
                   return <Login setCurrentUser={this.setCurrentUser} {...props} />
@@ -142,18 +148,22 @@ class App extends Component {
                 <Route exact path="/logout" component={Logout} />
                 <AuthenticatedRoute
                   exact
-                  path="/songs"
+                  path="/"
                   authenticated={this.state.authenticated}
-                  component={SongList}
-                  songs={this.state.songs} />
-                <ShowRoute
-                  path="/songs/:songId"
-                  component={ChordEditor}
+                  component={Home} />
+                <AuthenticatedRoute
+                  exact
+                  path="/user"
+                  authenticated={this.state.authenticated}
+                  component={User} />
+                {/* <ShowRoute
+                  path="/user"
+                  component={User}
                   authenticated={this.state.authenticated}
                   requireAuth={true}
                   param="songId"
                   updateSong={this.updateSong}
-                  items={this.state.songs} />
+                  items={this.state.songs} /> */}
               </div>
             </div>
           </div>

@@ -1,17 +1,26 @@
-import Rebase from 're-base';
-import firebase from 'firebase';
+// import Rebase from 're-base';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
 
-const config = {
-  apiKey: process.env.REACT_APP_FIREBASE_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_DOMAIN,
-  databaseURL: process.env.REACT_APP_FIREBASE_DATABASE,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID
+var config = {
+  apiKey: "AIzaSyAkygr8Sq8jzgcc6eaFNOsuwjUYHNP8Fpo",
+  authDomain: "h-s-law.firebaseapp.com",
+  databaseURL: "https://h-s-law.firebaseio.com",
+  projectId: "h-s-law",
+  storageBucket: "h-s-law.appspot.com",
+  messagingSenderId: "354038864855"
 };
 
-const app = firebase.initializeApp(config)
-const base = Rebase.createClass(app.database())
-const facebookProvider = new firebase.auth.FacebookAuthProvider()
 
-export { app, base, facebookProvider }
+const app = firebase.initializeApp(config)
+// const base = Rebase.createClass(app.database())
+const facebookProvider = new firebase.auth.FacebookAuthProvider()
+const googleProvider = new firebase.auth.GoogleAuthProvider()
+const firestore = firebase.firestore()
+
+firestore.settings({
+  timestampsInSnapshots: true
+});
+
+export { app, facebookProvider, googleProvider, firestore }

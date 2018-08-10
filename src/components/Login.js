@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 import { Toaster, Intent } from '@blueprintjs/core'
-import { app, facebookProvider } from '../base'
+import { app, googleProvider, firestore } from '../base'
+
+
+import toastr from 'reactjs-toastr'
+import 'reactjs-toastr/lib/toast.css'
 
 const loginStyles = {
   width: "90%",
@@ -15,26 +19,43 @@ const loginStyles = {
 class Login extends Component {
   constructor(props) {
     super(props)
-    this.authWithFacebook = this.authWithFacebook.bind(this)
-    this.authWithEmailPassword = this.authWithEmailPassword.bind(this)
     this.state = {
-      redirect: false
+      redirect: false,
+      loading: false
     }
   }
 
-  authWithFacebook() {
-    app.auth().signInWithPopup(facebookProvider)
+  authWithGoogle = () => {
+    this.setState({ loading: true })
+    app.auth().signInWithPopup(googleProvider)
       .then((user, error) => {
         if (error) {
           this.toaster.show({ intent: Intent.DANGER, message: "Unable to sign in with Facebook" })
         } else {
-          this.props.setCurrentUser(user)
-          this.setState({ redirect: true })
+          this.props.setCurrentUser(user);
+          this.saveAndUpdateUser(user.user);
+          this.setState({  loading: false , redirect: true })
         }
       })
   }
 
-  authWithEmailPassword(event) {
+
+  saveAndUpdateUser = (user) => {
+    console.log(user);
+    firestore.doc(`users/${user.uid}`).set({
+        name: user.displayName || "John Doe",
+        email: user.email,
+        photoUrl: user.photoURL || null,
+        uid: user.uid,
+    }).then((x)=>{
+        console.log("User Added Successfully", x)
+    }).catch((error)=> {
+        console.log(error)
+        toastr.error(error.status, error.message, {displayDuration: 1000})
+    })
+}
+
+  authWithEmailPassword = (event) => {
     event.preventDefault()
 
     const email = this.emailInput.value
@@ -50,7 +71,7 @@ class Login extends Component {
           this.loginForm.reset()
           this.toaster.show({ intent: Intent.WARNING, message: "Try alternative login." })
         } else {
-          // sign user in
+          // sign user ins
           return app.auth().signInWithEmailAndPassword(email, password)
         }
       })
@@ -76,7 +97,7 @@ class Login extends Component {
     return (
       <div style={loginStyles}>
         <Toaster ref={(element) => { this.toaster = element }} />
-        <button style={{width: "100%"}} className="pt-button pt-intent-primary" onClick={() => { this.authWithFacebook() }}>Log In with Facebook</button>
+        <button style={{width: "100%"}} className="pt-button pt-intent-primary" onClick={() => { this.authWithGoogle() }}>Log In with Google</button>
         <hr style={{marginTop: "10px", marginBottom: "10px"}}/>
         <form onSubmit={(event) => { this.authWithEmailPassword(event) }} ref={(form) => { this.loginForm = form }}>
           <div style={{marginBottom: "10px"}} className="pt-callout pt-icon-info-sign">
@@ -91,7 +112,7 @@ class Login extends Component {
             Password
             <input style={{width: "100%"}} className="pt-input" name="password" type="password" ref={(input) => { this.passwordInput = input }} placeholder="Password"></input>
           </label>
-          <input style={{width: "100%"}} type="submit" className="pt-button pt-intent-primary" value="Log In"></input>
+          <button style={{width: "100%"}} type="submit" className="pt-button pt-intent-primary">Log In</button>
 
         </form>
       </div>
