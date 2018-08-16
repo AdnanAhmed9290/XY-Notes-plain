@@ -1,5 +1,5 @@
 import React from 'react';
-import {firestore} from '../../base';
+import { app, firestore} from '../../base';
 import toastr from 'reactjs-toastr';
 import 'reactjs-toastr/lib/toast.css';
 import {Link} from 'react-router-dom';
@@ -8,7 +8,7 @@ import { Spinner } from '@blueprintjs/core';
 import Table from './components/table/table.view';
 import './home.style.css';
 
-const uid = localStorage.getItem('user');
+const uid = null;
 
 class Home extends React.Component {
 
@@ -23,13 +23,12 @@ class Home extends React.Component {
             isDataLoading: false,
             loading: true
         };
-        this.updateWindowDimensions = this
-            .updateWindowDimensions
-            .bind(this);
     }
 
     componentDidMount() {
-        this.updateWindowDimensions();
+        // this.updateWindowDimensions();
+        if(app.auth().currentUser !== null) 
+            this.uid = app.auth().currentUser.uid;
         this.getPersons()
             .then(data => {
                 this.setState({isDataLoading: false, persons: data});
@@ -49,17 +48,17 @@ class Home extends React.Component {
        
     }
 
-    updateWindowDimensions() {
-        this.setState({
-            cells: window.innerWidth / 80
-        });
-    }
+    // updateWindowDimensions() {
+    //     this.setState({
+    //         cells: window.innerWidth / 80
+    //     });
+    // }
 
     getPersons = () => {
         this.setState({isDataLoading: true});
         let _this = this;
         const data = [];
-        let colRef = `users/${uid}/persons`;
+        let colRef = `users/${this.uid}/persons`;
         return firestore
             .collection(colRef)
             .get()
@@ -83,7 +82,7 @@ class Home extends React.Component {
 
     personSelect = (id) => {
         const data = [];
-        let colRef = `users/${uid}/persons/${id}/tasks`;
+        let colRef = `users/${this.uid}/persons/${id}/tasks`;
         firestore
             .collection(colRef)
             .get()
@@ -143,8 +142,8 @@ class Home extends React.Component {
     }
 
     updateTask = (id, location, value, description) => {
-        console.log("ID: ",id,",Location: ", location,", Value : ",value,"Desc: ",description)
-        let docRef = `users/${uid}/persons/${this.state.selectedPerson}/tasks/${id}`;
+        // console.log("ID: ",id,",Location: ", location,", Value : ",value,"Desc: ",description)
+        let docRef = `users/${this.uid}/persons/${this.state.selectedPerson}/tasks/${id}`;
         firestore.doc(docRef).set({location, value, description})
         .then(() => {
             toastr.success('Task Updated successfully','Success',{displayDuration: 1000})
@@ -155,7 +154,7 @@ class Home extends React.Component {
     }
 
     saveTask = (location, value, description) => {
-        let colRef = `users/${uid}/persons/${this.state.selectedPerson}/tasks`;
+        let colRef = `users/${this.uid}/persons/${this.state.selectedPerson}/tasks`;
         firestore.collection(colRef).add({location, value, description})
         .then(() => {
             // console.log('Item Saved', data)
@@ -177,7 +176,7 @@ class Home extends React.Component {
             .findIndex(x => x.location === location);
         let newValues = this.state.selectedCells;
         let docId = newValues[getIndex].id;
-        let docRef = `users/${uid}/persons/${this.state.selectedPerson}/tasks/${docId}`;
+        let docRef = `users/${this.uid}/persons/${this.state.selectedPerson}/tasks/${docId}`;
         firestore.doc(docRef).delete().then(()=> {
             newValues.splice(getIndex, 1);
             this.setState({selectedCells: newValues})

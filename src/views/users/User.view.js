@@ -2,7 +2,7 @@ import React  from 'react';
 import { Redirect, Link } from 'react-router-dom';
 import toastr from 'reactjs-toastr';
 import 'reactjs-toastr/lib/toast.css';
-import {firestore} from '../../base';
+import {app,firestore} from '../../base';
  
 
 
@@ -18,7 +18,7 @@ const formStyles = {
 class User extends React.Component {
 
     saveUser = (e) => {
-        let uid = localStorage.getItem('user');
+        let uid = app.auth().currentUser.uid;
         let colRef = `users/${uid}/persons`;
         e.preventDefault();
         const name = this.username.value

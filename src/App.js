@@ -101,7 +101,6 @@ class App extends Component {
           currentUser: user,
           loading: false,
         })
-        localStorage.setItem('user', user.uid)
 
         // this.songsRef = base.syncState(`songs/${user.uid}`, {
         //   context: this,
@@ -114,7 +113,6 @@ class App extends Component {
           loading: false,
         })
 
-        localStorage.removeItem('user');
         // base.removeBinding(this.songsRef);
       }
     })

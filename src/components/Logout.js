@@ -13,7 +13,6 @@ class Logout extends Component {
 
   componentWillMount() {
     app.auth().signOut().then((user) => {
-      localStorage.removeItem('user');
       this.setState({ redirect: true })
     })
   }
